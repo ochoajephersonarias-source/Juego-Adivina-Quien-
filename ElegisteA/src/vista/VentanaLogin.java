@@ -125,6 +125,8 @@ public class VentanaLogin extends JFrame {
             );
 
             dispose();
+            VentanaMenu menu = new VentanaMenu(gestor);
+            menu.setVisible(true);
 
         } catch (IOException | GeneralSecurityException ex) {
 
