@@ -12,10 +12,12 @@ public class Personaje implements Adivinable {
     private boolean tieneBarba;
     private String rutaImagen;
     private String colorPiel;
+    private String genero;
 
     public Personaje(int idPersonaje, String nombre, String colorOjos, String tipoCabello,
                      String colorCabello, String accesorios, boolean usaLentes,
-                     boolean tieneSonrisa, boolean tieneBarba, String rutaImagen, String colorPiel) {
+                     boolean tieneSonrisa, boolean tieneBarba, String rutaImagen,
+                     String colorPiel, String genero) {
         this.idPersonaje = idPersonaje;
         this.nombre = nombre;
         this.colorOjos = colorOjos;
@@ -27,8 +29,8 @@ public class Personaje implements Adivinable {
         this.tieneBarba = tieneBarba;
         this.rutaImagen = rutaImagen;
         this.colorPiel = colorPiel;
-    }
-
+       this.genero =genero;
+}
     @Override
     public boolean esCandidatoValido(Personaje candidato) {
         if (candidato == null) {
@@ -68,6 +70,8 @@ public class Personaje implements Adivinable {
     public String getAccesorios() {
         return accesorios;
     }
+
+    public String getGenero() {return genero; }
 
     public boolean isUsaLentes() {
         return usaLentes;
