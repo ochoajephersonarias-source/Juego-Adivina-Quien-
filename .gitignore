@@ -1,0 +1,9 @@
+﻿target/
+out/
+.idea/
+*.iml
+*.class
+*.db-journal
+*.db-wal
+*.db-shm
+data/usuarios.txt
