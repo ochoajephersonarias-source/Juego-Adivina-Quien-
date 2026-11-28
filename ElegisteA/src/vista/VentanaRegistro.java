@@ -1,12 +1,13 @@
-
 package vista;
 
+import idioma.GestorIdioma;
 import usuarios.GestorUsuarios;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 
 public class VentanaRegistro extends JFrame {
@@ -17,11 +18,19 @@ public class VentanaRegistro extends JFrame {
     private JPasswordField campoContrasena;
     private JPasswordField campoConfirmar;
 
+    private JLabel titulo;
+    private JLabel subtitulo;
+    private JLabel etiquetaUsuario;
+    private JLabel etiquetaContrasena;
+    private JLabel etiquetaConfirmar;
+
+    private JButton botonRegistrar;
+    private JButton botonCancelar;
+
     public VentanaRegistro(GestorUsuarios gestor) {
 
         this.gestor = gestor;
 
-        setTitle("Adivina Quién - Crear cuenta");
         setSize(440, 420);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -32,17 +41,10 @@ public class VentanaRegistro extends JFrame {
                 BorderFactory.createEmptyBorder(25, 35, 25, 35)
         );
 
-        JLabel titulo = new JLabel(
-                "CREAR CUENTA",
-                SwingConstants.CENTER
-        );
-
+        titulo = new JLabel("", SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 25));
 
-        JLabel subtitulo = new JLabel(
-                "Regístrate para comenzar a jugar",
-                SwingConstants.CENTER
-        );
+        subtitulo = new JLabel("", SwingConstants.CENTER);
 
         JPanel encabezado = new JPanel(new GridLayout(2, 1, 5, 5));
         encabezado.add(titulo);
@@ -52,21 +54,25 @@ public class VentanaRegistro extends JFrame {
         campoContrasena = new JPasswordField();
         campoConfirmar = new JPasswordField();
 
+        etiquetaUsuario = new JLabel();
+        etiquetaContrasena = new JLabel();
+        etiquetaConfirmar = new JLabel();
+
         JPanel formulario = new JPanel(new GridLayout(6, 1, 8, 8));
 
-        formulario.add(new JLabel("Nombre de usuario:"));
+        formulario.add(etiquetaUsuario);
         formulario.add(campoUsuario);
 
-        formulario.add(new JLabel("Contraseña:"));
+        formulario.add(etiquetaContrasena);
         formulario.add(campoContrasena);
 
-        formulario.add(new JLabel("Confirmar contraseña:"));
+        formulario.add(etiquetaConfirmar);
         formulario.add(campoConfirmar);
 
-        JButton botonRegistrar = new JButton("Crear cuenta");
+        botonRegistrar = new JButton();
         botonRegistrar.addActionListener(e -> registrarCuenta());
 
-        JButton botonCancelar = new JButton("Cancelar");
+        botonCancelar = new JButton();
         botonCancelar.addActionListener(e -> dispose());
 
         JPanel botones = new JPanel(new GridLayout(1, 2, 10, 0));
@@ -78,6 +84,45 @@ public class VentanaRegistro extends JFrame {
         principal.add(botones, BorderLayout.SOUTH);
 
         add(principal);
+
+        actualizarTextos();
+    }
+
+    private void actualizarTextos() {
+
+        setTitle(
+                GestorIdioma.obtenerTexto("app.titulo")
+                        + " - "
+                        + GestorIdioma.obtenerTexto("registro.titulo")
+        );
+
+        titulo.setText(
+                GestorIdioma.obtenerTexto("registro.titulo").toUpperCase()
+        );
+
+        subtitulo.setText(
+                GestorIdioma.obtenerTexto("registro.subtitulo")
+        );
+
+        etiquetaUsuario.setText(
+                GestorIdioma.obtenerTexto("registro.usuario")
+        );
+
+        etiquetaContrasena.setText(
+                GestorIdioma.obtenerTexto("registro.contrasena")
+        );
+
+        etiquetaConfirmar.setText(
+                GestorIdioma.obtenerTexto("registro.confirmar")
+        );
+
+        botonRegistrar.setText(
+                GestorIdioma.obtenerTexto("registro.boton")
+        );
+
+        botonCancelar.setText(
+                GestorIdioma.obtenerTexto("general.cancelar")
+        );
     }
 
     private void registrarCuenta() {
@@ -91,9 +136,21 @@ public class VentanaRegistro extends JFrame {
 
             if (nombre.isEmpty()) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Debes escribir un nombre de usuario."
+                mostrarMensaje(
+                        GestorIdioma.obtenerTexto("registro.usuario_vacio"),
+                        GestorIdioma.obtenerTexto("general.error"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                return;
+            }
+
+            if (!nombre.matches("[a-zA-Z0-9_]{3,20}")) {
+
+                mostrarMensaje(
+                        GestorIdioma.obtenerTexto("registro.usuario_invalido"),
+                        GestorIdioma.obtenerTexto("general.error"),
+                        JOptionPane.WARNING_MESSAGE
                 );
 
                 return;
@@ -101,9 +158,10 @@ public class VentanaRegistro extends JFrame {
 
             if (contrasena.length < 8) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "La contraseña debe tener al menos 8 caracteres."
+                mostrarMensaje(
+                        GestorIdioma.obtenerTexto("registro.contrasena_corta"),
+                        GestorIdioma.obtenerTexto("general.error"),
+                        JOptionPane.WARNING_MESSAGE
                 );
 
                 return;
@@ -111,9 +169,21 @@ public class VentanaRegistro extends JFrame {
 
             if (!Arrays.equals(contrasena, confirmar)) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Las contraseñas no coinciden."
+                mostrarMensaje(
+                        GestorIdioma.obtenerTexto("registro.no_coinciden"),
+                        GestorIdioma.obtenerTexto("general.error"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                return;
+            }
+
+            if (gestor.existeUsuario(nombre)) {
+
+                mostrarMensaje(
+                        GestorIdioma.obtenerTexto("registro.duplicado"),
+                        GestorIdioma.obtenerTexto("registro.error_titulo"),
+                        JOptionPane.WARNING_MESSAGE
                 );
 
                 return;
@@ -121,10 +191,9 @@ public class VentanaRegistro extends JFrame {
 
             gestor.registrarUsuario(nombre, contrasena);
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "¡Cuenta creada correctamente! Ya puedes iniciar sesión.",
-                    "Registro exitoso",
+            mostrarMensaje(
+                    GestorIdioma.obtenerTexto("registro.exito_detalle"),
+                    GestorIdioma.obtenerTexto("registro.exito_titulo"),
                     JOptionPane.INFORMATION_MESSAGE
             );
 
@@ -132,19 +201,22 @@ public class VentanaRegistro extends JFrame {
 
         } catch (IllegalArgumentException | IllegalStateException ex) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    ex.getMessage(),
-                    "No se pudo registrar",
+            mostrarMensaje(
+                    GestorIdioma.obtenerTexto("registro.error_generico"),
+                    GestorIdioma.obtenerTexto("registro.error_titulo"),
                     JOptionPane.WARNING_MESSAGE
             );
 
         } catch (IOException | GeneralSecurityException ex) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Error al guardar la cuenta: " + ex.getMessage(),
-                    "Error",
+            String mensaje = MessageFormat.format(
+                    GestorIdioma.obtenerTexto("registro.error_guardar"),
+                    ex.getMessage()
+            );
+
+            mostrarMensaje(
+                    mensaje,
+                    GestorIdioma.obtenerTexto("general.error"),
                     JOptionPane.ERROR_MESSAGE
             );
 
@@ -156,5 +228,25 @@ public class VentanaRegistro extends JFrame {
             campoContrasena.setText("");
             campoConfirmar.setText("");
         }
+    }
+
+    private void mostrarMensaje(
+            String mensaje,
+            String titulo,
+            int tipo
+    ) {
+
+        String aceptar = GestorIdioma.obtenerTexto("general.aceptar");
+
+        JOptionPane.showOptionDialog(
+                this,
+                mensaje,
+                titulo,
+                JOptionPane.DEFAULT_OPTION,
+                tipo,
+                null,
+                new Object[]{aceptar},
+                aceptar
+        );
     }
 }
